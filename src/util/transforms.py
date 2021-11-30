@@ -1,5 +1,6 @@
 import numpy as np
 from osgeo import gdal
+import rasterio
 
 def get_latlong(geotiff_img_path: str) -> tuple:
     """Returns limits of geotiff (in CRS) as a four-object tuple
@@ -32,5 +33,7 @@ def get_latlong(geotiff_img_path: str) -> tuple:
 
 
 def tif_to_array(tif_path: str) -> np.array:
-    ds = gdal.Open(tif_path)
-    return np.array(ds.GetRasterBand(1).ReadAsArray())
+    with rasterio.open(tif_path, 'r') as dataset:
+        dataset = dataset.read()
+        dataset = np.squeeze(dataset.squeeze())
+        return dataset
